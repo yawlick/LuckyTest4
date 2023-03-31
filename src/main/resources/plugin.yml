@@ -1,0 +1,14 @@
+name: LuckyTest
+version: '${project.version}'
+main: yawlick.ru.luckytest.LuckyTest
+website: https://new.cristalix.gg
+commands:
+  sponge:
+    permission: LuckyTest.Admin
+    permission-message: §l§o§cУ вас недостаточно прав! Доступ к этой команде есть только у §l§o§eАдминистрации
+  heal:
+    permission: LuckyTest.Admin
+    permission-message: §l§o§cУ вас недостаточно прав! Доступ к этой команде есть только у §l§o§eАдминистрации
+  gm:
+    permission: LuckyTest.Admin
+    permission-message: §l§o§cУ вас недостаточно прав! Доступ к этой команде есть только у §l§o§eАдминистрации
