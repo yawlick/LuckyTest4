@@ -1,9 +1,11 @@
 package yawlick.ru.luckytest;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,9 +18,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.UUID;
+
+import javax.print.DocFlavor;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Thread.sleep;
@@ -34,24 +36,14 @@ public class EventListener implements Listener {
         Player plr = event.getPlayer();
         Location location = block.getLocation();
 
-        ItemStack RandomItem = getRandomItem();
-
-        int itemValue2 = ThreadLocalRandom.current().nextInt(1, 4);
-
-        Random ran = new Random();
-        //int lucky = ThreadLocalRandom.current().nextInt(1, LuckyTest.getInstance().materialList.size() + 1);
-
         if (material == Material.SPONGE) {
-            block.getWorld().getBlockAt(location).setType(Material.AIR);
+            if (LuckyTest.getInstance().luckyblocks.containsKey(event.getBlock().getLocation())) {
+                ItemStack item = getRandomItem(LuckyTest.getInstance().luckyblocks.get(event.getBlock().getLocation()));
 
-            for (Material m : LuckyTest.getInstance().materialList) {
-                if (ThreadLocalRandom.current().nextInt(1, 12) < 12) {
-                    block.getWorld().dropItem(block.getLocation(), getRandomItem());
-                    break;
-                } else {
-                    plr.playSound(plr.getLocation(), Sound.ENTITY_VILLAGER_DEATH, 1, 1);
-                    plr.sendActionBar(ChatColor.RED + "Увы, но вам не повезло =(");
-                }
+                event.setCancelled(true);
+                event.getBlock().setType(Material.AIR);
+                event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), item);
+                LuckyTest.getInstance().luckyblocks.remove(location);
             }
         }
 
@@ -83,6 +75,14 @@ public class EventListener implements Listener {
             stand.setVisible(false);
             stand.setMarker(true);
             LuckyTest.getInstance().totemsList.add(stand.getUniqueId());
+        }
+
+        if (b.getType() == Material.SPONGE) {
+            NBTItem itemNBT = new NBTItem(event.getItemInHand());
+            String type = itemNBT.getString("type");
+            if(type == null) return;
+            LBType luckyblock = LBType.valueOf(type);
+            LuckyTest.getInstance().luckyblocks.put(event.getBlock().getLocation(), luckyblock);
         }
     }
 
@@ -117,17 +117,7 @@ public class EventListener implements Listener {
         LuckyTest.getInstance().onlinePlayerList.remove(plr);
     }
 
-    private ItemStack getRandomItem() {
-
-        Material chosenMaterial = LuckyTest.getInstance().materialList.get(new Random().nextInt(LuckyTest.getInstance().materialList.size())); // Выбирается рандомный материал
-
-        if (!chosenMaterial.isSolid() || !chosenMaterial.equals(Material.AIR)) { // Проверка
-
-            ItemStack luckyItems = new ItemStack(chosenMaterial);
-
-            return luckyItems;
-        }
-
-        return getRandomItem();
+    private ItemStack getRandomItem(LBType type) {
+        return type.getDrop().get(LuckyTest.getInstance().random.nextInt(type.getDrop().size()));
     }
 }

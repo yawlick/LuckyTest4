@@ -1,7 +1,9 @@
 package yawlick.ru.luckytest;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -16,11 +18,15 @@ import yawlick.ru.luckytest.command.heal;
 import yawlick.ru.luckytest.command.sponge;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public final class LuckyTest extends JavaPlugin {
+
+    public Random random = new Random();
 
     private static LuckyTest instance;
 
@@ -28,37 +34,36 @@ public final class LuckyTest extends JavaPlugin {
     public ArrayList<Player> onlinePlayerList = new ArrayList();
     public ArrayList<UUID> totemsList = new ArrayList();
 
+    public HashMap<Location, LBType> luckyblocks = new HashMap<>();
+
+
     @Override
     public void onEnable() {
         instance = this;
-        int lucky = ThreadLocalRandom.current().nextInt(1, 101);
 
         ItemStack sponge = new ItemStack(Material.SPONGE, 1);
         ItemMeta spongeMeta = sponge.getItemMeta();
         spongeMeta.setDisplayName(ChatColor.GRAY + "Обычная губка");
         sponge.setItemMeta(spongeMeta);
-
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.DARK_GRAY + "Ничего необычного...");
-        spongeMeta.setLore(lore);
+        NBTItem spongeCommonNBT = new NBTItem(sponge);
+        spongeCommonNBT.setString("type", LBType.COMMMON.name());
+        sponge = spongeCommonNBT.getItem();
 
         ItemStack rsponge = new ItemStack(Material.SPONGE, 1);
         ItemMeta rspongeMeta = rsponge.getItemMeta();
         rspongeMeta.setDisplayName(ChatColor.BLUE + "Редкая губка");
         rsponge.setItemMeta(rspongeMeta);
-
-        ArrayList<String> rlore = new ArrayList<>();
-        rlore.add(ChatColor.GRAY + "Может выпать редкий лут"); //не может
-        rspongeMeta.setLore(rlore);
+        NBTItem rspongeCommonNBT = new NBTItem(rsponge);
+        rspongeCommonNBT.setString("type", LBType.RARE.name());
+        rsponge = rspongeCommonNBT.getItem();
 
         ItemStack esponge = new ItemStack(Material.SPONGE, 1);
         ItemMeta espongeMeta = esponge.getItemMeta();
         espongeMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Эпическая губка");
         esponge.setItemMeta(espongeMeta);
-
-        ArrayList<String> elore = new ArrayList<>();
-        elore.add(ChatColor.WHITE + "Есть небольшой шанс на эпические вещи!"); //нету
-        espongeMeta.setLore(elore);
+        NBTItem espongeCommonNBT = new NBTItem(esponge);
+        espongeCommonNBT.setString("type", LBType.EPIC.name());
+        esponge = espongeCommonNBT.getItem();
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             public void run() {
@@ -88,14 +93,23 @@ public final class LuckyTest extends JavaPlugin {
 
         // АРРАЙ ЛИСТЫ
         materialList.add(Material.APPLE);
-        materialList.add(Material.WOOD);
+        materialList.add(Material.LOG);
         materialList.add(Material.STICK);
-        materialList.add(Material.DIAMOND);
-        materialList.add(Material.DIAMOND_PICKAXE);
-        materialList.add(Material.IRON_INGOT);
-        materialList.add(Material.GOLDEN_CARROT);
-        materialList.add(Material.GOLD_INGOT);
-        materialList.add(Material.SPONGE);
+        materialList.add(Material.DIAMOND_ORE);
+        materialList.add(Material.IRON_ORE);
+        materialList.add(Material.BREAD);
+        materialList.add(Material.GOLD_ORE);
+        materialList.add(Material.COAL);
+        materialList.add(Material.COBBLESTONE);
+        materialList.add(Material.BOOK);
+        materialList.add(Material.OBSIDIAN);
+        materialList.add(Material.EXP_BOTTLE);
+        materialList.add(Material.DIRT);
+        materialList.add(Material.GLASS);
+        materialList.add(Material.BLAZE_POWDER);
+        materialList.add(Material.NETHER_WARTS);
+        materialList.add(Material.WATER_BUCKET);
+        materialList.add(Material.LAVA_BUCKET);
 
     }
 
